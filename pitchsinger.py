@@ -47,22 +47,22 @@ MAX_INT=2**15 - 1
 # signed integer numpy array
 def wavegen(freq, shape=None):
 
+  # use sine if no shape is given
   if shape is None:
     shape='sine'
 
+  # create array of time points
+  t = 2.0 * np.pi * float(freq) * np.arange(0, np.floor(FS/freq)) / float(FS)
+
+  # draw waveform
   if shape=='sine':
-    wave = MAX_INT * np.sin(2.0 * np.pi * float(freq) * \
-           np.arange(0, np.floor(FS/freq)) / float(FS))
+    wave = MAX_INT * np.sin(t)
   elif shape=='sawtooth':
-    wave = MAX_INT * signal.sawtooth(2.0 * np.pi * float(freq) * \
-           np.arange(0, np.floor(FS/freq)) / float(FS))
+    wave = MAX_INT * signal.sawtooth(t + np.pi)
   elif shape=='triangle':
-    wave = np.concatenate( [\
-           MAX_INT * signal.sawtooth(2.0 * np.pi * float(freq) * \
-           np.arange(0, np.floor(FS/freq/2)) / float(FS)), \
-           MAX_INT * signal.sawtooth(2.0 * np.pi * float(freq) * \
-           np.arange(np.floor(FS/freq/2), np.floor(FS/freq)) / float(FS), \
-           width=0)] )
+    wave = MAX_INT * signal.sawtooth(t + np.pi/2, 0.5)
+  elif shape=='square':
+    wave = MAX_INT * signal.square(t)
 
   return np.array(wave, dtype=np.int16)
 
@@ -107,7 +107,7 @@ if __name__ == '__main__':
   shape=DEFAULT_SHAPE
   for opt, arg in opts:
     if opt == '--shape':
-      if arg in ('sine','triange','sawtooth'):
+      if arg in ('sine','triange','sawtooth','square'):
         shape=arg
       else:
         print("WARNING: Unrecognised wave shape,"\

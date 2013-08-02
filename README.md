@@ -16,6 +16,7 @@ the sound card.
 * triangle (default)
 * sine
 * sawtooth
+* square
 
 ## Input format
 
